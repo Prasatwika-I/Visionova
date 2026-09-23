@@ -43,7 +43,7 @@ function getGoogleAuth() {
   }
 }
 
-const SHEET_COLUMNS = [
+const DEFAULT_SHEET_COLUMNS = [
   "Registration ID",
   "Timestamp",
   "Team Lead Email",
@@ -61,6 +61,44 @@ const SHEET_COLUMNS = [
   "Payment Screenshot",
   "Payment Status",
 ];
+
+// Helper to convert column index (0-based) to Sheet column letter (A, B, ..., P, etc.)
+function columnIndexToLetter(index: number): string {
+  let letter = "";
+  let temp = index;
+  while (temp >= 0) {
+    letter = String.fromCharCode((temp % 26) + 65) + letter;
+    temp = Math.floor(temp / 26) - 1;
+  }
+  return letter;
+}
+
+// Dynamically map column positions from actual sheet headers
+function getHeaderIndices(headers: string[]) {
+  const findCol = (predicate: (h: string) => boolean, fallback: number): number => {
+    const idx = headers.findIndex((h) => predicate(String(h || "").trim().toLowerCase()));
+    return idx !== -1 ? idx : fallback;
+  };
+
+  return {
+    id: findCol((h) => h.includes("registration id") || h === "id" || h.includes("reg id"), 0),
+    timestamp: findCol((h) => h.includes("timestamp") || h.includes("date") || h.includes("time"), 1),
+    teamLeadEmail: findCol((h) => h.includes("lead email") || (h.includes("email") && !h.includes("member")), 2),
+    teamLeadName: findCol((h) => h.includes("lead name") || (h.includes("name") && !h.includes("member")), 3),
+    year: findCol((h) => h.includes("year"), 4),
+    section: findCol((h) => h.includes("section") || h.includes("sec"), 5),
+    teamLeadRollNumber: findCol((h) => h.includes("lead roll") || (h.includes("roll") && !h.includes("member")), 6),
+    teamLeadPhone: findCol((h) => h.includes("phone") || h.includes("mobile") || h.includes("contact"), 7),
+    member1Name: findCol((h) => h.includes("member 1") && h.includes("name"), 8),
+    member1Roll: findCol((h) => h.includes("member 1") && h.includes("roll"), 9),
+    member2Name: findCol((h) => h.includes("member 2") && h.includes("name"), 10),
+    member2Roll: findCol((h) => h.includes("member 2") && h.includes("roll"), 11),
+    member3Name: findCol((h) => h.includes("member 3") && h.includes("name"), 12),
+    member3Roll: findCol((h) => h.includes("member 3") && h.includes("roll"), 13),
+    paymentScreenshotUrl: findCol((h) => h.includes("screenshot") || h.includes("proof"), 14),
+    paymentStatus: findCol((h) => h.includes("payment status") || h.includes("status"), 15),
+  };
+}
 
 // Get first sheet title dynamically
 async function getFirstSheetTitle(sheets: any, spreadsheetId: string): Promise<string> {
@@ -90,7 +128,7 @@ async function ensureSheetHeaders(sheets: any, spreadsheetId: string, sheetName?
         range: `'${targetSheet}'!A1:P1`,
         valueInputOption: "RAW",
         requestBody: {
-          values: [SHEET_COLUMNS],
+          values: [DEFAULT_SHEET_COLUMNS],
         },
       });
     }
@@ -105,7 +143,6 @@ export async function getAllRegistrations(): Promise<RegistrationData[]> {
   const spreadsheetId = getCleanSpreadsheetId();
 
   if (!auth || !spreadsheetId) {
-    // Fallback to local storage
     return getLocalRegistrations();
   }
 
@@ -116,40 +153,51 @@ export async function getAllRegistrations(): Promise<RegistrationData[]> {
 
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId,
-      range: `'${targetSheet}'!A2:P`,
+      range: `'${targetSheet}'!A1:Z500`,
     });
 
     const rows = response.data.values || [];
+    if (rows.length <= 1) {
+      const local = getLocalRegistrations();
+      return local;
+    }
+
+    const headers = rows[0] || [];
+    const col = getHeaderIndices(headers);
+
     const sheetRegistrations = rows
-      .filter((row) => row && row.length > 0 && String(row[0] || "").trim() !== "" && row[0] !== "Registration ID")
-      .map((row) => ({
-        id: String(row[0] || ""),
-        timestamp: String(row[1] || ""),
-        teamLeadEmail: String(row[2] || ""),
-        teamLeadName: String(row[3] || ""),
-        year: String(row[4] || ""),
-        section: String(row[5] || ""),
-        teamLeadRollNumber: String(row[6] || ""),
-        teamLeadPhone: String(row[7] || ""),
-        member1Name: String(row[8] || ""),
-        member1Roll: String(row[9] || ""),
-        member2Name: String(row[10] || ""),
-        member2Roll: String(row[11] || ""),
-        member3Name: String(row[12] || ""),
-        member3Roll: String(row[13] || ""),
-        paymentScreenshotUrl: String(row[14] || ""),
-        paymentStatus: (["Pending", "Verified", "Rejected"].includes(String(row[15] || "").trim())
-          ? String(row[15] || "").trim()
-          : "Pending") as "Pending" | "Verified" | "Rejected",
-      }));
+      .slice(1) // Skip header row
+      .filter((row) => row && row.length > 0 && String(row[col.id] || "").trim() !== "" && !String(row[col.id] || "").includes("Registration ID"))
+      .map((row) => {
+        const rawStatus = String(row[col.paymentStatus] || "Pending").trim();
+        const validStatus: "Pending" | "Verified" | "Rejected" =
+          rawStatus === "Verified" ? "Verified" : rawStatus === "Rejected" ? "Rejected" : "Pending";
+
+        return {
+          id: String(row[col.id] || "").trim(),
+          timestamp: String(row[col.timestamp] || "").trim(),
+          teamLeadEmail: String(row[col.teamLeadEmail] || "").trim(),
+          teamLeadName: String(row[col.teamLeadName] || "").trim(),
+          year: String(row[col.year] || "").trim(),
+          section: String(row[col.section] || "").trim(),
+          teamLeadRollNumber: String(row[col.teamLeadRollNumber] || "").trim(),
+          teamLeadPhone: String(row[col.teamLeadPhone] || "").trim(),
+          member1Name: String(row[col.member1Name] || "").trim(),
+          member1Roll: String(row[col.member1Roll] || "").trim(),
+          member2Name: String(row[col.member2Name] || "").trim(),
+          member2Roll: String(row[col.member2Roll] || "").trim(),
+          member3Name: String(row[col.member3Name] || "").trim(),
+          member3Roll: String(row[col.member3Roll] || "").trim(),
+          paymentScreenshotUrl: String(row[col.paymentScreenshotUrl] || "").trim(),
+          paymentStatus: validStatus,
+        };
+      });
 
     if (sheetRegistrations.length > 0) {
       return sheetRegistrations;
     }
 
-    // If Google Sheet is empty, check fallback
-    const local = getLocalRegistrations();
-    return local;
+    return getLocalRegistrations();
   } catch (error) {
     console.error("Error fetching from Google Sheets, using fallback:", error);
     return getLocalRegistrations();
@@ -195,7 +243,7 @@ export async function checkDuplicateRegistration(
   return { isDuplicate: false };
 }
 
-// Append a new registration to Google Sheets (or fallback)
+// Append a new registration to Google Sheets (aligned with header order)
 export async function appendRegistration(data: RegistrationData): Promise<boolean> {
   // Always save to local fallback as well for redundancy
   saveLocalRegistration(data);
@@ -204,7 +252,7 @@ export async function appendRegistration(data: RegistrationData): Promise<boolea
   const spreadsheetId = getCleanSpreadsheetId();
 
   if (!auth || !spreadsheetId) {
-    return true; // Already saved locally
+    return true;
   }
 
   try {
@@ -212,39 +260,45 @@ export async function appendRegistration(data: RegistrationData): Promise<boolea
     const targetSheet = await getFirstSheetTitle(sheets, spreadsheetId);
     await ensureSheetHeaders(sheets, spreadsheetId, targetSheet);
 
-    const values = [
-      [
-        data.id,
-        data.timestamp,
-        data.teamLeadEmail,
-        data.teamLeadName,
-        data.year,
-        data.section,
-        data.teamLeadRollNumber,
-        data.teamLeadPhone,
-        data.member1Name,
-        data.member1Roll,
-        data.member2Name,
-        data.member2Roll,
-        data.member3Name,
-        data.member3Roll,
-        data.paymentScreenshotUrl,
-        data.paymentStatus || "Pending",
-      ],
-    ];
+    // Read current headers to place values in the exact matching columns
+    const headerRes = await sheets.spreadsheets.values.get({
+      spreadsheetId,
+      range: `'${targetSheet}'!A1:Z1`,
+    });
+
+    const headers: string[] = (headerRes.data.values && headerRes.data.values[0]) || DEFAULT_SHEET_COLUMNS;
+    const col = getHeaderIndices(headers);
+
+    // Construct array of length equal to headers
+    const rowValues = new Array(Math.max(headers.length, 16)).fill("");
+    rowValues[col.id] = data.id;
+    rowValues[col.timestamp] = data.timestamp;
+    rowValues[col.teamLeadEmail] = data.teamLeadEmail;
+    rowValues[col.teamLeadName] = data.teamLeadName;
+    rowValues[col.year] = data.year;
+    rowValues[col.section] = data.section;
+    rowValues[col.teamLeadRollNumber] = data.teamLeadRollNumber;
+    rowValues[col.teamLeadPhone] = data.teamLeadPhone;
+    rowValues[col.member1Name] = data.member1Name;
+    rowValues[col.member1Roll] = data.member1Roll;
+    rowValues[col.member2Name] = data.member2Name;
+    rowValues[col.member2Roll] = data.member2Roll;
+    rowValues[col.member3Name] = data.member3Name;
+    rowValues[col.member3Roll] = data.member3Roll;
+    rowValues[col.paymentScreenshotUrl] = data.paymentScreenshotUrl;
+    rowValues[col.paymentStatus] = data.paymentStatus || "Pending";
 
     await sheets.spreadsheets.values.append({
       spreadsheetId,
       range: `'${targetSheet}'!A:P`,
       valueInputOption: "USER_ENTERED",
       insertDataOption: "INSERT_ROWS",
-      requestBody: { values },
+      requestBody: { values: [rowValues] },
     });
 
     return true;
   } catch (error) {
     console.error("Error appending to Google Sheets:", error);
-    // Already saved to fallback
     return true;
   }
 }
@@ -270,17 +324,23 @@ export async function updateRegistrationStatus(
 
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId,
-      range: `'${targetSheet}'!A2:P`,
+      range: `'${targetSheet}'!A1:Z500`,
     });
 
     const rows = response.data.values || [];
-    const rowIndex = rows.findIndex((row) => row[0] === id);
+    if (rows.length <= 1) return true;
+
+    const headers = rows[0] || [];
+    const col = getHeaderIndices(headers);
+
+    // Find row index (0-based in rows array)
+    const rowIndex = rows.findIndex((row, idx) => idx > 0 && row && String(row[col.id] || "").trim() === id);
 
     if (rowIndex !== -1) {
-      // Google Sheets is 1-indexed, headers are in row 1, so row is rowIndex + 2
-      const sheetRowNumber = rowIndex + 2;
-      // Column P is the 16th column (Payment Status)
-      const range = `'${targetSheet}'!P${sheetRowNumber}`;
+      // 1-indexed row number in Google Sheets
+      const sheetRowNumber = rowIndex + 1;
+      const colLetter = columnIndexToLetter(col.paymentStatus);
+      const range = `'${targetSheet}'!${colLetter}${sheetRowNumber}`;
 
       await sheets.spreadsheets.values.update({
         spreadsheetId,
@@ -295,7 +355,6 @@ export async function updateRegistrationStatus(
     return true;
   } catch (error) {
     console.error("Error updating status in Google Sheets:", error);
-    // Even if Google Sheets update failed, local was updated
     return true;
   }
 }
