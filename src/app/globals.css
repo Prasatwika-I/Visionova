@@ -1,0 +1,232 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=IBM+Plex+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --font-display: "Fraunces", Georgia, serif;
+    --font-body: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --font-mono: "IBM Plex Mono", Consolas, Menlo, Courier, monospace;
+    
+    /* Obsidian Plum & Warm Sand Identity Tokens */
+    --color-obsidian-plum: #17121C;
+    --color-mulberry: #241A2D;
+    --color-warm-sand: #F2EBDD;
+    --color-porcelain: #FFFDF7;
+    --color-acid-lime: #C8F04A;
+    --color-electric-coral: #FF6B5E;
+    --color-dusty-lilac: #B9A7C9;
+    --color-deep-plum: #211725;
+    --color-muted-text: #695A6B;
+    --color-border: #DDD3C8;
+  }
+
+  html {
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: #F2EBDD;
+    color: #211725;
+    font-family: var(--font-body);
+    min-height: 100vh;
+    overflow-x: hidden;
+    width: 100%;
+    position: relative;
+  }
+
+  h1, h2, h3, .font-display, .font-editorial {
+    font-family: var(--font-display);
+  }
+
+  code, pre, .font-mono, .font-code, .editorial-label {
+    font-family: var(--font-mono);
+  }
+}
+
+/* Fluid Responsive Typography */
+.hero-title {
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 13vw, 7.5rem);
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+}
+
+.hero-subtitle {
+  font-size: clamp(1rem, 4vw, 1.875rem);
+  letter-spacing: 0.15em;
+}
+
+.section-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.75rem, 7vw, 3.5rem);
+  line-height: 1.05;
+}
+
+/* Custom Editorial Palette Classes */
+.bg-obsidian-plum {
+  background-color: #17121C;
+}
+
+.bg-mulberry {
+  background-color: #241A2D;
+}
+
+.bg-warm-sand {
+  background-color: #F2EBDD;
+}
+
+.bg-porcelain {
+  background-color: #FFFDF7;
+}
+
+.bg-acid-lime {
+  background-color: #C8F04A;
+}
+
+.bg-electric-coral {
+  background-color: #FF6B5E;
+}
+
+.text-obsidian-plum {
+  color: #17121C;
+}
+
+.text-deep-plum {
+  color: #211725;
+}
+
+.text-porcelain {
+  color: #FFFDF7;
+}
+
+.text-acid-lime {
+  color: #C8F04A;
+}
+
+.text-electric-coral {
+  color: #FF6B5E;
+}
+
+.text-dusty-lilac {
+  color: #B9A7C9;
+}
+
+.text-muted-plum {
+  color: #695A6B;
+}
+
+.border-editorial {
+  border-color: #DDD3C8;
+}
+
+.border-plum {
+  border-color: #241A2D;
+}
+
+/* Mobile-First Editorial Form Inputs (16px base font prevents iOS zoom) */
+.editorial-input {
+  background-color: #FFFDF7;
+  border: 1px solid #DDD3C8;
+  border-radius: 4px;
+  color: #211725;
+  font-size: 16px;
+  min-height: 48px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  width: 100%;
+}
+
+.editorial-input:focus {
+  outline: none;
+  border-color: #C8F04A;
+  box-shadow: 0 0 0 2px rgba(200, 240, 74, 0.4);
+}
+
+.editorial-input::placeholder {
+  color: #9E90A2;
+}
+
+/* Dark Editorial Inputs (for Admin) */
+.dark-editorial-input {
+  background-color: #191220;
+  border: 1px solid #362844;
+  border-radius: 4px;
+  color: #FFFDF7;
+  font-size: 16px;
+  min-height: 48px;
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+.dark-editorial-input:focus {
+  outline: none;
+  border-color: #C8F04A;
+  box-shadow: 0 0 0 2px rgba(200, 240, 74, 0.25);
+  background-color: #1F1726;
+}
+
+.dark-editorial-input::placeholder {
+  color: #786882;
+}
+
+/* Touch-Friendly Action Buttons (Minimum 48px height) */
+.btn-acid-lime {
+  background-color: #C8F04A;
+  color: #211725;
+  font-weight: 800;
+  border: 1px solid #C8F04A;
+  border-radius: 4px;
+  min-height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  touch-action: manipulation;
+}
+
+.btn-acid-lime:hover:not(:disabled) {
+  background-color: #B8E438;
+  border-color: #B8E438;
+  transform: translateY(-1px);
+}
+
+.btn-acid-lime:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.btn-acid-lime:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Film Grid Textures */
+.film-grid-dark {
+  background-image: linear-gradient(to right, rgba(242, 235, 221, 0.04) 1px, transparent 1px),
+                    linear-gradient(to bottom, rgba(242, 235, 221, 0.04) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+.film-grid-light {
+  background-image: linear-gradient(to right, rgba(33, 23, 37, 0.05) 1px, transparent 1px),
+                    linear-gradient(to bottom, rgba(33, 23, 37, 0.05) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #17121C;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #241A2D;
+  border-radius: 2px;
+}
