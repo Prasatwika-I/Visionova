@@ -3,17 +3,20 @@ import { RegistrationData } from "./types";
 import { EVENT_CONFIG } from "./config";
 
 function getTransporter() {
-  const host = process.env.SMTP_HOST || "smtp.gmail.com";
-  const port = parseInt(process.env.SMTP_PORT || "587", 10);
-  const user = process.env.SMTP_USER;
-  const pass = process.env.SMTP_PASS;
+  const host = (process.env.SMTP_HOST || "smtp.gmail.com").replace(/^["']|["']$/g, "").trim();
+  const port = parseInt((process.env.SMTP_PORT || "587").toString().replace(/^["']|["']$/g, "").trim(), 10);
+  let user = (process.env.SMTP_USER || "prasatwika.induru05@gmail.com").replace(/^["']|["']$/g, "").trim();
+  let pass = (process.env.SMTP_PASS || "iahnfjodtkbhlugs").replace(/^["']|["']$/g, "").trim();
+
+  // Clean spaces from app passwords (e.g. "iahn fjod tkbh lugs" -> "iahnfjodtkbhlugs")
+  pass = pass.replace(/\s+/g, "");
 
   if (!user || !pass) {
     return null;
   }
 
-  // If using Gmail, nodemailer's built-in service preset ensures optimal TLS configuration
-  if (host === "smtp.gmail.com" || (user && user.endsWith("@gmail.com"))) {
+  // Use gmail preset for highest reliability with Gmail accounts
+  if (host === "smtp.gmail.com" || user.endsWith("@gmail.com")) {
     return nodemailer.createTransport({
       service: "gmail",
       auth: { user, pass },

@@ -2,19 +2,30 @@ import { google } from "googleapis";
 import { RegistrationData } from "./types";
 import { getLocalRegistrations, saveLocalRegistration, updateLocalPaymentStatus } from "./storageFallback";
 
-// Format private key properly (handle \n in env var)
+function getCleanSpreadsheetId(): string {
+  let id = process.env.GOOGLE_SHEET_ID || "1Gj3i5VIUf61yCwP67cCK7_6mFdsYMYGzQ5uqcj3A9zE";
+  id = id.replace(/^["']|["']$/g, "").trim();
+  const match = id.match(/\/d\/([a-zA-Z0-9_-]+)/);
+  return match ? match[1] : id;
+}
+
+// Format private key properly (handle quotes, \n, and \r\n in env var)
 function getGoogleAuth() {
-  const email = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
+  let email = (process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL || "visionova-registration@visionova-509514.iam.gserviceaccount.com").replace(/^["']|["']$/g, "").trim();
   let privateKey = process.env.GOOGLE_PRIVATE_KEY;
 
-  if (!email || !privateKey) {
+  if (!privateKey) {
     return null;
   }
 
-  // If private key has escaped newlines like '\n', replace with actual newlines
+  // Clean surrounding quotes
+  privateKey = privateKey.replace(/^["']|["']$/g, "").trim();
+
+  // If private key has literal '\n', replace with actual newlines
   if (privateKey.includes("\\n")) {
     privateKey = privateKey.replace(/\\n/g, "\n");
   }
+  privateKey = privateKey.replace(/\r\n/g, "\n");
 
   try {
     const auth = new google.auth.JWT({
@@ -91,7 +102,7 @@ async function ensureSheetHeaders(sheets: any, spreadsheetId: string, sheetName?
 // Fetch all registrations (from Google Sheets or local fallback)
 export async function getAllRegistrations(): Promise<RegistrationData[]> {
   const auth = getGoogleAuth();
-  const spreadsheetId = process.env.GOOGLE_SHEET_ID;
+  const spreadsheetId = getCleanSpreadsheetId();
 
   if (!auth || !spreadsheetId) {
     // Fallback to local storage
@@ -190,7 +201,7 @@ export async function appendRegistration(data: RegistrationData): Promise<boolea
   saveLocalRegistration(data);
 
   const auth = getGoogleAuth();
-  const spreadsheetId = process.env.GOOGLE_SHEET_ID;
+  const spreadsheetId = getCleanSpreadsheetId();
 
   if (!auth || !spreadsheetId) {
     return true; // Already saved locally
@@ -247,7 +258,7 @@ export async function updateRegistrationStatus(
   updateLocalPaymentStatus(id, status);
 
   const auth = getGoogleAuth();
-  const spreadsheetId = process.env.GOOGLE_SHEET_ID;
+  const spreadsheetId = getCleanSpreadsheetId();
 
   if (!auth || !spreadsheetId) {
     return true;

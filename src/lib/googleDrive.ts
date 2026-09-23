@@ -3,16 +3,21 @@ import { Readable } from "stream";
 import { saveLocalUpload } from "./storageFallback";
 
 function getGoogleDriveAuth() {
-  const email = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
+  let email = (process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL || "visionova-registration@visionova-509514.iam.gserviceaccount.com").replace(/^["']|["']$/g, "").trim();
   let privateKey = process.env.GOOGLE_PRIVATE_KEY;
 
-  if (!email || !privateKey) {
+  if (!privateKey) {
     return null;
   }
 
+  // Clean surrounding quotes
+  privateKey = privateKey.replace(/^["']|["']$/g, "").trim();
+
+  // If private key has literal '\n', replace with actual newlines
   if (privateKey.includes("\\n")) {
     privateKey = privateKey.replace(/\\n/g, "\n");
   }
+  privateKey = privateKey.replace(/\r\n/g, "\n");
 
   try {
     const auth = new google.auth.JWT({
