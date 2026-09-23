@@ -52,13 +52,11 @@ export async function checkIsAdminAuthenticated(): Promise<boolean> {
 }
 
 export function validateAdminCredentials(email: string, pass: string): boolean {
-  const configuredEmail = process.env.ADMIN_EMAIL?.trim();
-  const configuredPassword = process.env.ADMIN_PASSWORD;
+  const rawEmail = process.env.ADMIN_EMAIL || "visionova@gmail.com";
+  const rawPassword = process.env.ADMIN_PASSWORD || "visionova";
 
-  if (!configuredEmail || !configuredPassword) {
-    console.warn("ADMIN_EMAIL or ADMIN_PASSWORD is not configured in server environment variables.");
-    return false;
-  }
+  const configuredEmail = rawEmail.replace(/^["']|["']$/g, "").trim();
+  const configuredPassword = rawPassword.replace(/^["']|["']$/g, "").trim();
 
   if (!email || !pass) {
     return false;
@@ -66,6 +64,6 @@ export function validateAdminCredentials(email: string, pass: string): boolean {
 
   return (
     email.trim().toLowerCase() === configuredEmail.toLowerCase() &&
-    pass === configuredPassword
+    pass.trim() === configuredPassword
   );
 }
