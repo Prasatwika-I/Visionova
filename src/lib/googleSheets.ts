@@ -51,18 +51,32 @@ const SHEET_COLUMNS = [
   "Payment Status",
 ];
 
-// Ensure header row exists in Google Sheets
-async function ensureSheetHeaders(sheets: any, spreadsheetId: string, sheetName: string = "Sheet1") {
+// Get first sheet title dynamically
+async function getFirstSheetTitle(sheets: any, spreadsheetId: string): Promise<string> {
   try {
+    const meta = await sheets.spreadsheets.get({ spreadsheetId });
+    if (meta.data.sheets && meta.data.sheets.length > 0) {
+      return meta.data.sheets[0].properties?.title || "Sheet1";
+    }
+  } catch (err) {
+    console.warn("Could not retrieve sheet metadata, defaulting to Sheet1:", err);
+  }
+  return "Sheet1";
+}
+
+// Ensure header row exists in Google Sheets
+async function ensureSheetHeaders(sheets: any, spreadsheetId: string, sheetName?: string) {
+  try {
+    const targetSheet = sheetName || (await getFirstSheetTitle(sheets, spreadsheetId));
     const res = await sheets.spreadsheets.values.get({
       spreadsheetId,
-      range: `${sheetName}!A1:P1`,
+      range: `'${targetSheet}'!A1:P1`,
     });
     const rows = res.data.values;
     if (!rows || rows.length === 0 || rows[0].length === 0) {
       await sheets.spreadsheets.values.update({
         spreadsheetId,
-        range: `${sheetName}!A1:P1`,
+        range: `'${targetSheet}'!A1:P1`,
         valueInputOption: "RAW",
         requestBody: {
           values: [SHEET_COLUMNS],
@@ -86,13 +100,16 @@ export async function getAllRegistrations(): Promise<RegistrationData[]> {
 
   try {
     const sheets = google.sheets({ version: "v4", auth });
+    const targetSheet = await getFirstSheetTitle(sheets, spreadsheetId);
+    await ensureSheetHeaders(sheets, spreadsheetId, targetSheet);
+
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId,
-      range: "Sheet1!A2:P",
+      range: `'${targetSheet}'!A2:P`,
     });
 
     const rows = response.data.values || [];
-    return rows
+    const sheetRegistrations = rows
       .filter((row) => row && row.length > 0 && String(row[0] || "").trim() !== "" && row[0] !== "Registration ID")
       .map((row) => ({
         id: String(row[0] || ""),
@@ -114,6 +131,14 @@ export async function getAllRegistrations(): Promise<RegistrationData[]> {
           ? String(row[15] || "").trim()
           : "Pending") as "Pending" | "Verified" | "Rejected",
       }));
+
+    if (sheetRegistrations.length > 0) {
+      return sheetRegistrations;
+    }
+
+    // If Google Sheet is empty, check fallback
+    const local = getLocalRegistrations();
+    return local;
   } catch (error) {
     console.error("Error fetching from Google Sheets, using fallback:", error);
     return getLocalRegistrations();
@@ -148,10 +173,10 @@ export async function checkDuplicateRegistration(
   const normalizedRoll = rollNumber.trim().toUpperCase();
 
   for (const reg of registrations) {
-    if (reg.teamLeadEmail.trim().toLowerCase() === normalizedEmail) {
+    if (reg.teamLeadEmail && reg.teamLeadEmail.trim().toLowerCase() === normalizedEmail) {
       return { isDuplicate: true, field: "email" };
     }
-    if (reg.teamLeadRollNumber.trim().toUpperCase() === normalizedRoll) {
+    if (reg.teamLeadRollNumber && reg.teamLeadRollNumber.trim().toUpperCase() === normalizedRoll) {
       return { isDuplicate: true, field: "rollNumber" };
     }
   }
@@ -173,7 +198,8 @@ export async function appendRegistration(data: RegistrationData): Promise<boolea
 
   try {
     const sheets = google.sheets({ version: "v4", auth });
-    await ensureSheetHeaders(sheets, spreadsheetId);
+    const targetSheet = await getFirstSheetTitle(sheets, spreadsheetId);
+    await ensureSheetHeaders(sheets, spreadsheetId, targetSheet);
 
     const values = [
       [
@@ -198,7 +224,7 @@ export async function appendRegistration(data: RegistrationData): Promise<boolea
 
     await sheets.spreadsheets.values.append({
       spreadsheetId,
-      range: "Sheet1!A:P",
+      range: `'${targetSheet}'!A:P`,
       valueInputOption: "USER_ENTERED",
       insertDataOption: "INSERT_ROWS",
       requestBody: { values },
@@ -217,7 +243,7 @@ export async function updateRegistrationStatus(
   id: string,
   status: "Pending" | "Verified" | "Rejected"
 ): Promise<boolean> {
-  // Update local fallback
+  // Always update local storage
   updateLocalPaymentStatus(id, status);
 
   const auth = getGoogleAuth();
@@ -229,37 +255,37 @@ export async function updateRegistrationStatus(
 
   try {
     const sheets = google.sheets({ version: "v4", auth });
+    const targetSheet = await getFirstSheetTitle(sheets, spreadsheetId);
+
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId,
-      range: "Sheet1!A2:P",
+      range: `'${targetSheet}'!A2:P`,
     });
 
     const rows = response.data.values || [];
     const rowIndex = rows.findIndex((row) => row[0] === id);
 
-    if (rowIndex === -1) {
-      console.warn(`Registration ID ${id} not found in Google Sheets`);
-      return false;
+    if (rowIndex !== -1) {
+      // Google Sheets is 1-indexed, headers are in row 1, so row is rowIndex + 2
+      const sheetRowNumber = rowIndex + 2;
+      // Column P is the 16th column (Payment Status)
+      const range = `'${targetSheet}'!P${sheetRowNumber}`;
+
+      await sheets.spreadsheets.values.update({
+        spreadsheetId,
+        range,
+        valueInputOption: "USER_ENTERED",
+        requestBody: {
+          values: [[status]],
+        },
+      });
     }
-
-    // Google Sheets is 1-indexed, headers are in row 1, so row is rowIndex + 2
-    const sheetRowNumber = rowIndex + 2;
-    // Column P is the 16th column (Payment Status)
-    const range = `Sheet1!P${sheetRowNumber}`;
-
-    await sheets.spreadsheets.values.update({
-      spreadsheetId,
-      range,
-      valueInputOption: "USER_ENTERED",
-      requestBody: {
-        values: [[status]],
-      },
-    });
 
     return true;
   } catch (error) {
     console.error("Error updating status in Google Sheets:", error);
-    return false;
+    // Even if Google Sheets update failed, local was updated
+    return true;
   }
 }
 
