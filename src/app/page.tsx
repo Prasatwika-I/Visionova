@@ -1,5 +1,6 @@
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
+import MarqueeTicker from "@/components/MarqueeTicker";
 import EventInfoSection from "@/components/EventInfoSection";
 import RegistrationForm from "@/components/RegistrationForm";
 import { EVENT_CONFIG } from "@/lib/config";
@@ -15,10 +16,13 @@ export default function HomePage() {
         {/* 2. DARK CINEMATIC HERO (#17121C) */}
         <HeroSection />
 
-        {/* 3. DARK EVENT INFORMATION (#17121C) */}
+        {/* 3. INFINITE ANIMATED MARQUEE TICKER */}
+        <MarqueeTicker />
+
+        {/* 4. DARK EVENT INFORMATION (#17121C) */}
         <EventInfoSection />
 
-        {/* 4. DARK REGISTRATION & PAYMENT (#17121C) */}
+        {/* 5. DARK REGISTRATION & PAYMENT (#17121C) */}
         <RegistrationForm />
       </div>
 

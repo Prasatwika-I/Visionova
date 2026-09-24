@@ -125,12 +125,15 @@ export default function PaymentSection({ paymentFile, fileError, onFileSelect }:
             </div>
           </div>
 
-          {/* Official Payment QR inside clean container */}
-          <div className="relative my-2 sm:my-3 p-2.5 sm:p-3 bg-white rounded-[4px] border border-[#362844] w-[190px] h-[190px] sm:w-[240px] sm:h-[240px] flex items-center justify-center overflow-hidden">
+          {/* Official Payment QR inside clean container with laser scanline animation */}
+          <div className="relative my-2 sm:my-3 p-2.5 sm:p-3 bg-white rounded-[4px] border-2 border-[#C8F04A]/70 w-[190px] h-[190px] sm:w-[240px] sm:h-[240px] flex items-center justify-center overflow-hidden shadow-lg animate-laser-pulse group">
+            {/* Animated Laser Scanner Line */}
+            <div className="absolute left-0 right-0 h-[3px] bg-gradient-to-r from-transparent via-[#C8F04A] to-transparent shadow-[0_0_12px_#C8F04A] pointer-events-none z-10 animate-scanline" />
+            
             <img
               src="/payment-qr.jpeg"
               alt="Official Event Payment QR Code"
-              className="w-full h-full object-contain rounded-[2px] select-none"
+              className="w-full h-full object-contain rounded-[2px] select-none transition-transform duration-300 group-hover:scale-105"
             />
           </div>
 

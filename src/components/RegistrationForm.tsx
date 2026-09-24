@@ -333,11 +333,11 @@ export default function RegistrationForm() {
                 </div>
               </div>
 
-              {/* Submit Button */}
+              {/* Submit Button with Shimmer Animation */}
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="btn-acid-lime w-full py-3.5 sm:py-4 min-h-[50px] sm:min-h-[54px] text-xs sm:text-sm font-extrabold tracking-wider uppercase flex items-center justify-center space-x-2 cursor-pointer shadow-md hover:shadow-lg touch-manipulation"
+                className="btn-acid-lime btn-shimmer-wrapper w-full py-3.5 sm:py-4 min-h-[50px] sm:min-h-[54px] text-xs sm:text-sm font-extrabold tracking-wider uppercase flex items-center justify-center space-x-2 cursor-pointer shadow-lg hover:shadow-xl hover:scale-[1.01] active:scale-[0.99] transition-all touch-manipulation"
               >
                 {isSubmitting ? (
                   <>

@@ -31,7 +31,7 @@ export default function EventInfoSection() {
         {/* Asymmetric Dark Editorial Cards */}
         <div className="grid grid-cols-1 md:grid-cols-12 gap-3.5 sm:gap-5">
           {/* Card 1: DATE (Span 7) */}
-          <div className="md:col-span-7 bg-[#1F1726] p-4 sm:p-6 md:p-7 rounded-[4px] border border-[#362844] flex flex-col justify-between shadow-xs hover:border-[#C8F04A]/60 transition-colors">
+          <div className="md:col-span-7 bg-[#1F1726] p-4 sm:p-6 md:p-7 rounded-[4px] border border-[#362844] flex flex-col justify-between shadow-xs interactive-card cursor-default">
             <div className="flex items-start justify-between mb-3 sm:mb-6">
               <div className="flex items-center space-x-2">
                 <span className="text-[11px] sm:text-xs font-mono font-bold px-2 py-0.5 rounded-[2px] bg-[#C8F04A] text-[#17121C]">
@@ -55,7 +55,7 @@ export default function EventInfoSection() {
           </div>
 
           {/* Card 2: VENUE (Span 5) */}
-          <div className="md:col-span-5 bg-[#1F1726] p-4 sm:p-6 md:p-7 rounded-[4px] border border-[#362844] flex flex-col justify-between shadow-xs hover:border-[#C8F04A]/60 transition-colors">
+          <div className="md:col-span-5 bg-[#1F1726] p-4 sm:p-6 md:p-7 rounded-[4px] border border-[#362844] flex flex-col justify-between shadow-xs interactive-card cursor-default">
             <div className="flex items-start justify-between mb-3 sm:mb-6">
               <div className="flex items-center space-x-2">
                 <span className="text-[11px] sm:text-xs font-mono font-bold px-2 py-0.5 rounded-[2px] bg-[#C8F04A] text-[#17121C]">
@@ -79,7 +79,7 @@ export default function EventInfoSection() {
           </div>
 
           {/* Card 3: TEAM SIZE (Span 5) */}
-          <div className="md:col-span-5 bg-[#1F1726] p-4 sm:p-6 md:p-7 rounded-[4px] border border-[#362844] flex flex-col justify-between shadow-xs hover:border-[#C8F04A]/60 transition-colors">
+          <div className="md:col-span-5 bg-[#1F1726] p-4 sm:p-6 md:p-7 rounded-[4px] border border-[#362844] flex flex-col justify-between shadow-xs interactive-card cursor-default">
             <div className="flex items-start justify-between mb-3 sm:mb-6">
               <div className="flex items-center space-x-2">
                 <span className="text-[11px] sm:text-xs font-mono font-bold px-2 py-0.5 rounded-[2px] bg-[#C8F04A] text-[#17121C]">
@@ -103,7 +103,7 @@ export default function EventInfoSection() {
           </div>
 
           {/* Card 4: REGISTRATION (Span 7) */}
-          <div className="md:col-span-7 bg-[#1F1726] p-4 sm:p-6 md:p-7 rounded-[4px] border border-[#362844] flex flex-col justify-between shadow-xs hover:border-[#C8F04A]/60 transition-colors">
+          <div className="md:col-span-7 bg-[#1F1726] p-4 sm:p-6 md:p-7 rounded-[4px] border border-[#362844] flex flex-col justify-between shadow-xs interactive-card cursor-default">
             <div className="flex items-start justify-between mb-3 sm:mb-6">
               <div className="flex items-center space-x-2">
                 <span className="text-[11px] sm:text-xs font-mono font-bold px-2 py-0.5 rounded-[2px] bg-[#C8F04A] text-[#17121C]">

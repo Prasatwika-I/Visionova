@@ -230,3 +230,132 @@
   background: #241A2D;
   border-radius: 2px;
 }
+
+/* ------------------------------------------------------------- */
+/* KEYFRAME ANIMATIONS & CREATIVE EFFECTS                        */
+/* ------------------------------------------------------------- */
+
+@keyframes float-slow {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-8px) rotate(0.5deg);
+  }
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    opacity: 0.25;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.55;
+    transform: scale(1.18);
+  }
+}
+
+@keyframes scanline-sweep {
+  0% {
+    top: 0%;
+    opacity: 0.2;
+  }
+  20% {
+    opacity: 0.9;
+  }
+  80% {
+    opacity: 0.9;
+  }
+  100% {
+    top: 100%;
+    opacity: 0.2;
+  }
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes btn-shimmer {
+  0% {
+    transform: translateX(-150%) skewX(-20deg);
+  }
+  50%, 100% {
+    transform: translateX(250%) skewX(-20deg);
+  }
+}
+
+@keyframes laser-pulse {
+  0%, 100% {
+    box-shadow: 0 0 10px rgba(200, 240, 74, 0.3), inset 0 0 10px rgba(200, 240, 74, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 22px rgba(200, 240, 74, 0.6), inset 0 0 16px rgba(200, 240, 74, 0.4);
+  }
+}
+
+.animate-float {
+  animation: float-slow 5s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 7s ease-in-out infinite;
+}
+
+.animate-scanline {
+  animation: scanline-sweep 2.8s ease-in-out infinite alternate;
+}
+
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee 28s linear infinite;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
+.animate-laser-pulse {
+  animation: laser-pulse 2.5s infinite ease-in-out;
+}
+
+/* Button Shimmer Overlay */
+.btn-shimmer-wrapper {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-shimmer-wrapper::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 40%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.35) 50%,
+    transparent 100%
+  );
+  animation: btn-shimmer 3.5s infinite cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+}
+
+/* Interactive Card Lift */
+.interactive-card {
+  transition: transform 0.28s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.28s ease, border-color 0.28s ease;
+}
+
+.interactive-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(200, 240, 74, 0.45);
+  box-shadow: 0 12px 30px -10px rgba(200, 240, 74, 0.12), 0 4px 12px -4px rgba(0, 0, 0, 0.5);
+}
+
