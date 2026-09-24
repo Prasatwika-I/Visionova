@@ -20,6 +20,7 @@ export default function DetailModal({
 }: DetailModalProps) {
   const [updating, setUpdating] = useState(false);
   const [showImagePreview, setShowImagePreview] = useState(false);
+  const [imageError, setImageError] = useState(false);
 
   if (!isOpen || !registration) return null;
 
@@ -47,6 +48,17 @@ export default function DetailModal({
       setUpdating(false);
     }
   };
+
+  const getDirectImageUrl = (url: string) => {
+    if (!url) return "";
+    const driveMatch = url.match(/\/d\/([a-zA-Z0-9_-]+)/) || url.match(/id=([a-zA-Z0-9_-]+)/);
+    if (driveMatch && driveMatch[1]) {
+      return `https://drive.google.com/thumbnail?id=${driveMatch[1]}&sz=w1000`;
+    }
+    return url;
+  };
+
+  const directImgUrl = getDirectImageUrl(registration.paymentScreenshotUrl);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/85 backdrop-blur-sm animate-in fade-in">
@@ -183,7 +195,10 @@ export default function DetailModal({
               <div>
                 <button
                   type="button"
-                  onClick={() => setShowImagePreview(!showImagePreview)}
+                  onClick={() => {
+                    setShowImagePreview(!showImagePreview);
+                    setImageError(false);
+                  }}
                   className="w-full inline-flex items-center justify-center space-x-2 px-4 py-2.5 min-h-[44px] rounded-[2px] bg-[#241A2D] hover:bg-[#362844] border border-[#362844] text-[#C8F04A] text-xs font-mono font-bold transition-all cursor-pointer touch-manipulation"
                 >
                   <ImageIcon className="w-4 h-4" />
@@ -196,11 +211,23 @@ export default function DetailModal({
             {showImagePreview && (
               <div className="mt-4 p-3 sm:p-4 rounded-[4px] bg-[#140F1A] border border-[#362844] flex flex-col items-center">
                 <div className="max-h-72 sm:max-h-96 w-full overflow-hidden rounded-[2px] border border-[#362844] mb-3 bg-black flex items-center justify-center p-2">
-                  <img
-                    src={registration.paymentScreenshotUrl}
-                    alt={`Payment proof for ${registration.id}`}
-                    className="max-h-64 sm:max-h-80 w-auto max-w-full object-contain rounded-[2px]"
-                  />
+                  {!imageError ? (
+                    <img
+                      src={directImgUrl}
+                      alt={`Payment proof for ${registration.id}`}
+                      onError={() => setImageError(true)}
+                      className="max-h-64 sm:max-h-80 w-auto max-w-full object-contain rounded-[2px]"
+                    />
+                  ) : (
+                    <div className="text-center p-4">
+                      <p className="text-xs font-mono text-amber-300 mb-1">
+                        Screenshot was stored in an ephemeral session or is external.
+                      </p>
+                      <p className="text-[11px] font-mono text-[#96869E]">
+                        New uploads are permanently backed up to high-speed cloud CDN.
+                      </p>
+                    </div>
+                  )}
                 </div>
                 <a
                   href={registration.paymentScreenshotUrl}

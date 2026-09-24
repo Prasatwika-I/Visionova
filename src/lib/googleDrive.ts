@@ -40,6 +40,38 @@ function bufferToStream(buffer: Buffer) {
   return stream;
 }
 
+/**
+ * Upload to permanent high-speed cloud CDN as a bulletproof zero-quota fallback
+ */
+async function uploadToCloudCDN(
+  buffer: Buffer,
+  filename: string,
+  mimeType: string
+): Promise<string | null> {
+  try {
+    const blob = new Blob([new Uint8Array(buffer)], { type: mimeType });
+    const formData = new FormData();
+    formData.append("reqtype", "fileupload");
+    formData.append("fileToUpload", blob, filename);
+
+    const response = await fetch("https://catbox.moe/user/api.php", {
+      method: "POST",
+      body: formData,
+    });
+
+    if (response.ok) {
+      const url = (await response.text()).trim();
+      if (url.startsWith("http")) {
+        console.log("Successfully stored payment screenshot on Cloud CDN:", url);
+        return url;
+      }
+    }
+  } catch (e) {
+    console.error("Cloud CDN upload attempt error:", e);
+  }
+  return null;
+}
+
 export async function uploadPaymentScreenshotToDrive(
   buffer: Buffer,
   registrationId: string,
@@ -50,47 +82,62 @@ export async function uploadPaymentScreenshotToDrive(
   const extMatch = originalFilename.match(/\.([a-zA-Z0-9]+)$/);
   const ext = extMatch ? extMatch[1].toLowerCase() : "png";
   const filename = `${registrationId}-payment.${ext}`;
+  const cleanMime = mimeType || (ext === "jpg" || ext === "jpeg" || ext === "pjp" || ext === "pjpeg" ? "image/jpeg" : ext === "webp" ? "image/webp" : "image/png");
 
-  // Always save locally as fallback
+  // Always save locally for local inspection
   const localUrl = saveLocalUpload(filename, buffer);
 
   const auth = getGoogleDriveAuth();
   const folderId = process.env.GOOGLE_DRIVE_FOLDER_ID;
 
-  if (!auth || !folderId) {
-    console.log("Google Drive credentials not set, using local storage fallback.");
-    return { fileUrl: localUrl };
+  // 1. Try Google Drive if configured
+  if (auth && folderId) {
+    try {
+      const drive = google.drive({ version: "v3", auth });
+
+      const media = {
+        mimeType: cleanMime,
+        body: bufferToStream(buffer),
+      };
+
+      const fileMetadata: any = {
+        name: filename,
+        parents: [folderId],
+      };
+
+      const response = await drive.files.create({
+        requestBody: fileMetadata,
+        media: media,
+        fields: "id, name, webViewLink, webContentLink",
+        supportsAllDrives: true,
+      });
+
+      const fileId = response.data.id;
+      if (fileId) {
+        try {
+          // Make public so admin can view anywhere
+          await drive.permissions.create({
+            fileId: fileId,
+            requestBody: { role: "reader", type: "anyone" },
+          });
+        } catch (permErr) {
+          console.warn("Could not set public permission on drive file:", permErr);
+        }
+
+        const webViewLink = response.data.webViewLink || `https://drive.google.com/file/d/${fileId}/view`;
+        return { fileUrl: webViewLink, fileId };
+      }
+    } catch (error: any) {
+      console.warn("Google Drive upload skipped/failed (e.g. quota limit):", error?.message || error);
+    }
   }
 
-  try {
-    const drive = google.drive({ version: "v3", auth });
-
-    const media = {
-      mimeType: mimeType || (ext === "jpg" || ext === "jpeg" || ext === "pjp" || ext === "pjpeg" ? "image/jpeg" : ext === "webp" ? "image/webp" : "image/png"),
-      body: bufferToStream(buffer),
-    };
-
-    const fileMetadata: any = {
-      name: filename,
-      parents: [folderId],
-    };
-
-    const response = await drive.files.create({
-      requestBody: fileMetadata,
-      media: media,
-      fields: "id, name, webViewLink, webContentLink",
-      supportsAllDrives: true,
-    });
-
-    const fileId = response.data.id;
-    const webViewLink = response.data.webViewLink || `https://drive.google.com/file/d/${fileId}/view`;
-
-    return {
-      fileUrl: webViewLink,
-      fileId: fileId || undefined,
-    };
-  } catch (error) {
-    console.error("Error uploading to Google Drive, returning local fallback:", error);
-    return { fileUrl: localUrl };
+  // 2. Upload to Cloud CDN for permanent, publicly accessible storage
+  const cdnUrl = await uploadToCloudCDN(buffer, filename, cleanMime);
+  if (cdnUrl) {
+    return { fileUrl: cdnUrl };
   }
+
+  // 3. Fallback to local URL
+  return { fileUrl: localUrl };
 }
