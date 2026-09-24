@@ -38,8 +38,7 @@ export default function Navbar() {
             className="inline-flex items-center justify-center space-x-1 sm:space-x-1.5 text-[11px] sm:text-xs font-mono text-[#C8F04A] bg-[#241A2D] hover:bg-[#362844] hover:border-[#C8F04A]/60 px-2.5 sm:px-3.5 py-2 min-h-[38px] sm:min-h-[42px] rounded-[3px] border border-[#362844] transition-all font-bold touch-manipulation shadow-xs whitespace-nowrap"
           >
             <Shield className="w-3.5 h-3.5 flex-shrink-0 text-[#C8F04A]" />
-            <span className="hidden xxs:inline">Admin</span>
-            <span className="xxs:hidden sm:inline">Access</span>
+            <span>Admin Access</span>
           </Link>
         </div>
       </div>
