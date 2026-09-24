@@ -15,8 +15,11 @@ export const EVENT_CONFIG = {
   EVENT_DATE: process.env.EVENT_DATE || "28 September 2026",
   EVENT_VENUE: process.env.EVENT_VENUE || "MBA Seminar Hall",
 
-  // Fee Details
+  // Fee & Payment Details
   REGISTRATION_FEE: process.env.REGISTRATION_FEE || "₹100",
+  PAYMENT_RECEIVER_NAME: "Yalakamani Shameer Taaj",
+  PAYMENT_UPI_ID: "7993356216@slc",
+  PAYMENT_PHONE_NUMBER: "7993356216",
 
   // Team restrictions
   TEAM_SIZE: 4, // Team Lead + 3 Members

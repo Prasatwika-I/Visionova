@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { QrCode, UploadCloud, FileImage, X, AlertCircle } from "lucide-react";
+import { QrCode, UploadCloud, FileImage, X, AlertCircle, Copy, Check, UserCheck, Smartphone } from "lucide-react";
 import FormStepHeader from "./FormStepHeader";
 import { EVENT_CONFIG } from "@/lib/config";
 
@@ -13,7 +13,16 @@ interface PaymentSectionProps {
 
 export default function PaymentSection({ paymentFile, fileError, onFileSelect }: PaymentSectionProps) {
   const [dragActive, setDragActive] = useState(false);
+  const [copiedField, setCopiedField] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleCopy = (text: string, fieldName: string) => {
+    if (navigator?.clipboard?.writeText) {
+      navigator.clipboard.writeText(text);
+      setCopiedField(fieldName);
+      setTimeout(() => setCopiedField(null), 2000);
+    }
+  };
 
   const validateAndSetFile = (file: File | null) => {
     if (!file) {
@@ -105,6 +114,17 @@ export default function PaymentSection({ paymentFile, fileError, onFileSelect }:
             </div>
           </div>
 
+          {/* Receiver Name Box Above Scanner */}
+          <div className="w-full max-w-[280px] my-2 py-2 px-3 rounded-[4px] bg-[#241A2D] border border-[#362844] flex items-center justify-center space-x-2 text-center">
+            <UserCheck className="w-4 h-4 text-[#C8F04A] flex-shrink-0" />
+            <div className="min-w-0 text-center">
+              <span className="text-[10px] font-mono text-[#96869E] uppercase tracking-wider block">Receiver Name</span>
+              <span className="text-xs sm:text-sm font-mono font-bold text-[#FFFDF7] block truncate">
+                {EVENT_CONFIG.PAYMENT_RECEIVER_NAME}
+              </span>
+            </div>
+          </div>
+
           {/* Official Payment QR inside clean container */}
           <div className="relative my-2 sm:my-3 p-2.5 sm:p-3 bg-white rounded-[4px] border border-[#362844] w-[190px] h-[190px] sm:w-[240px] sm:h-[240px] flex items-center justify-center overflow-hidden">
             <img
@@ -114,8 +134,55 @@ export default function PaymentSection({ paymentFile, fileError, onFileSelect }:
             />
           </div>
 
-          <p className="text-[11px] sm:text-xs font-mono text-[#96869E] max-w-xs mt-1">
-            Scan with GPay, PhonePe, Paytm or any UPI app.
+          {/* Direct UPI / Mobile Number Details with Copy Buttons Below QR */}
+          <div className="w-full max-w-[280px] space-y-2 mt-2">
+            {/* UPI ID */}
+            <div className="flex items-center justify-between px-3 py-2 rounded-[4px] bg-[#241A2D] border border-[#362844] text-left">
+              <div className="min-w-0 flex-1 pr-2">
+                <span className="text-[10px] font-mono text-[#96869E] uppercase tracking-wider block">UPI ID</span>
+                <span className="text-xs font-mono font-bold text-[#C8F04A] block truncate select-all">
+                  {EVENT_CONFIG.PAYMENT_UPI_ID}
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => handleCopy(EVENT_CONFIG.PAYMENT_UPI_ID, "upi")}
+                className="p-1.5 rounded-[2px] bg-[#191220] hover:bg-[#362844] text-[#B9A7C9] hover:text-[#FFFDF7] border border-[#362844] transition-all flex items-center justify-center min-w-[32px] min-h-[32px] touch-manipulation cursor-pointer flex-shrink-0"
+                title="Copy UPI ID"
+              >
+                {copiedField === "upi" ? (
+                  <Check className="w-3.5 h-3.5 text-emerald-400" />
+                ) : (
+                  <Copy className="w-3.5 h-3.5" />
+                )}
+              </button>
+            </div>
+
+            {/* Payment Number */}
+            <div className="flex items-center justify-between px-3 py-2 rounded-[4px] bg-[#241A2D] border border-[#362844] text-left">
+              <div className="min-w-0 flex-1 pr-2">
+                <span className="text-[10px] font-mono text-[#96869E] uppercase tracking-wider block">Payment Number</span>
+                <span className="text-xs font-mono font-bold text-[#FFFDF7] block truncate select-all">
+                  {EVENT_CONFIG.PAYMENT_PHONE_NUMBER}
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => handleCopy(EVENT_CONFIG.PAYMENT_PHONE_NUMBER, "phone")}
+                className="p-1.5 rounded-[2px] bg-[#191220] hover:bg-[#362844] text-[#B9A7C9] hover:text-[#FFFDF7] border border-[#362844] transition-all flex items-center justify-center min-w-[32px] min-h-[32px] touch-manipulation cursor-pointer flex-shrink-0"
+                title="Copy Payment Number"
+              >
+                {copiedField === "phone" ? (
+                  <Check className="w-3.5 h-3.5 text-emerald-400" />
+                ) : (
+                  <Copy className="w-3.5 h-3.5" />
+                )}
+              </button>
+            </div>
+          </div>
+
+          <p className="text-[11px] sm:text-xs font-mono text-[#96869E] max-w-xs mt-3">
+            Scan with GPay, PhonePe, Paytm or pay via UPI ID / Number.
           </p>
         </div>
 
