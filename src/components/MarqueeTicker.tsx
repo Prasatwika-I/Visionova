@@ -6,7 +6,7 @@ export default function MarqueeTicker() {
   const items = [
     { icon: Sparkles, text: "VISIONOVA 2026" },
     { icon: Film, text: "AI VIDEO CREATION" },
-    { icon: Award, text: "CASH PRIZES & AWARDS" },
+    { icon: Award, text: "AWARDS" },
     { icon: Users, text: "4-MEMBER SQUADS" },
     { icon: Video, text: "GEN-AI CINEMA" },
     { icon: Zap, text: "DEPT OF AI & DS • AITS TIRUPATI" },
