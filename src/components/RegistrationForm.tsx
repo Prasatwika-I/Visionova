@@ -256,29 +256,29 @@ export default function RegistrationForm() {
   return (
     <form onSubmit={handleSubmit} noValidate>
       {/* Registration Section: Dark Obsidian Plum Background */}
-      <section id="registration-section" className="py-20 md:py-28 bg-[#17121C] text-[#FFFDF7] relative border-b border-[#2E223A]">
+      <section id="registration-section" className="py-12 sm:py-16 md:py-24 bg-[#17121C] text-[#FFFDF7] relative border-b border-[#2E223A]">
         <div className="absolute inset-0 film-grid-dark opacity-40 pointer-events-none" />
 
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 relative z-10">
+        <div className="max-w-4xl mx-auto px-3 sm:px-6 relative z-10">
           {/* Section Header */}
-          <div className="text-center mb-12">
-            <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-[2px] bg-[#241A2D] border border-[#362844] text-[#C8F04A] text-xs font-mono font-bold uppercase tracking-widest mb-3">
+          <div className="text-center mb-8 sm:mb-12">
+            <div className="inline-flex items-center space-x-1.5 sm:space-x-2 px-2.5 py-1 rounded-[2px] bg-[#241A2D] border border-[#362844] text-[#C8F04A] text-[11px] sm:text-xs font-mono font-bold uppercase tracking-widest mb-2 sm:mb-3">
               <Film className="w-3.5 h-3.5 text-[#C8F04A]" />
               <span>OFFICIAL REGISTRATION</span>
             </div>
-            <h2 className="font-editorial text-4xl sm:text-5xl md:text-6xl font-black tracking-tight text-[#FFFDF7] mb-3">
-              BUILD YOUR TEAM
+            <h2 className="font-editorial text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-[#FFFDF7] mb-2">
+              BUILD YOUR SQUAD
             </h2>
-            <p className="text-sm sm:text-base font-mono text-[#B9A7C9] max-w-lg mx-auto">
-              Turn your idea into an AI-powered visual story.
+            <p className="text-xs sm:text-sm font-mono text-[#B9A7C9] max-w-lg mx-auto">
+              Register your team of 4 for the AI Video Challenge.
             </p>
           </div>
 
           {/* Global Error Banner */}
           {globalError && (
-            <div className="mb-8 p-4 rounded-[4px] bg-rose-950/80 border border-rose-500/60 flex items-start space-x-3 text-rose-200 animate-in fade-in">
-              <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5 text-rose-400" />
-              <div className="text-sm font-mono">
+            <div className="mb-6 sm:mb-8 p-3.5 sm:p-4 rounded-[4px] bg-rose-950/80 border border-rose-500/60 flex items-start space-x-2.5 sm:space-x-3 text-rose-200 animate-in fade-in">
+              <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0 mt-0.5 text-rose-400" />
+              <div className="text-xs sm:text-sm font-mono">
                 <span className="font-bold block">Registration Incomplete</span>
                 <span>{globalError}</span>
               </div>
@@ -286,7 +286,7 @@ export default function RegistrationForm() {
           )}
 
           {/* Main Dark Form Container */}
-          <div className="bg-[#1F1726] text-[#FFFDF7] rounded-[4px] p-4 sm:p-8 md:p-10 border border-[#362844] shadow-2xl mb-12">
+          <div className="bg-[#1F1726] text-[#FFFDF7] rounded-[4px] p-3.5 sm:p-7 md:p-10 border border-[#362844] shadow-2xl mb-8 sm:mb-12">
             {/* TEAM LEAD */}
             <TeamLeadSection
               formData={formData}
@@ -294,7 +294,7 @@ export default function RegistrationForm() {
               onChange={handleFieldChange}
             />
 
-            <hr className="my-8 border-[#362844]" />
+            <hr className="my-6 sm:my-8 border-[#362844]" />
 
             {/* TEAM MEMBERS */}
             <TeamMembersSection
@@ -303,7 +303,7 @@ export default function RegistrationForm() {
               onChange={handleFieldChange}
             />
 
-            <hr className="my-8 border-[#362844]" />
+            <hr className="my-6 sm:my-8 border-[#362844]" />
 
             {/* PAYMENT */}
             <PaymentSection
@@ -313,41 +313,41 @@ export default function RegistrationForm() {
             />
 
             {/* Final Submission Block with Acid Lime CTA */}
-            <div className="pt-6 border-t border-[#362844]">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 sm:p-5 rounded-[4px] bg-[#191220] border border-[#362844] mb-6">
-                <div className="flex items-center space-x-3">
-                  <div className="w-9 h-9 rounded-[2px] bg-[#241A2D] text-[#C8F04A] border border-[#362844] flex items-center justify-center flex-shrink-0 font-mono font-bold text-sm">
+            <div className="pt-5 sm:pt-6 border-t border-[#362844]">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 p-3.5 sm:p-5 rounded-[4px] bg-[#191220] border border-[#362844] mb-4 sm:mb-6">
+                <div className="flex items-center space-x-2.5 sm:space-x-3">
+                  <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-[2px] bg-[#241A2D] text-[#C8F04A] border border-[#362844] flex items-center justify-center flex-shrink-0 font-mono font-bold text-xs sm:text-sm">
                     ✓
                   </div>
                   <div className="text-left">
                     <p className="text-xs sm:text-sm font-mono font-bold text-[#FFFDF7]">4 Team Members + Payment Receipt</p>
-                    <p className="text-[11px] sm:text-xs font-mono text-[#96869E]">Lead + 3 Members verified upon submission</p>
+                    <p className="text-[10px] sm:text-xs font-mono text-[#96869E]">Instant confirmation email sent to Team Lead</p>
                   </div>
                 </div>
 
-                <div className="text-left sm:text-right w-full sm:w-auto pt-2 sm:pt-0 border-t sm:border-t-0 border-[#362844]">
-                  <span className="text-[11px] font-mono text-[#96869E] block">Total Amount</span>
-                  <span className="font-editorial text-2xl sm:text-3xl font-black text-[#C8F04A] font-mono">
+                <div className="text-left sm:text-right w-full sm:w-auto pt-2 sm:pt-0 border-t sm:border-t-0 border-[#362844] flex sm:block items-center justify-between">
+                  <span className="text-[10px] sm:text-[11px] font-mono text-[#96869E] block">Total Amount:</span>
+                  <span className="font-editorial text-xl sm:text-3xl font-black text-[#C8F04A] font-mono sm:mt-0.5 block">
                     {EVENT_CONFIG.REGISTRATION_FEE}
                   </span>
                 </div>
               </div>
 
-              {/* Submit Button: Acid Lime with Deep Plum Text, 54px touch height */}
+              {/* Submit Button */}
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="btn-acid-lime w-full py-4 min-h-[54px] text-sm sm:text-base font-extrabold tracking-wider uppercase flex items-center justify-center space-x-2 cursor-pointer shadow-md hover:shadow-lg touch-manipulation"
+                className="btn-acid-lime w-full py-3.5 sm:py-4 min-h-[50px] sm:min-h-[54px] text-xs sm:text-sm font-extrabold tracking-wider uppercase flex items-center justify-center space-x-2 cursor-pointer shadow-md hover:shadow-lg touch-manipulation"
               >
                 {isSubmitting ? (
                   <>
-                    <Loader2 className="w-5 h-5 animate-spin text-[#17121C]" />
+                    <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 animate-spin text-[#17121C]" />
                     <span>SUBMITTING REGISTRATION...</span>
                   </>
                 ) : (
                   <>
-                    <Sparkles className="w-5 h-5 text-[#17121C]" />
-                    <span>REGISTER FOR VISIONOVA →</span>
+                    <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-[#17121C]" />
+                    <span>COMPLETE REGISTRATION (₹100) →</span>
                   </>
                 )}
               </button>

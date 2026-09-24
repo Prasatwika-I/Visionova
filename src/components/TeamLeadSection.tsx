@@ -57,7 +57,7 @@ export default function TeamLeadSection({ formData, errors, onChange }: TeamLead
               value={formData.teamLeadEmail}
               onChange={(e) => onChange("teamLeadEmail", e.target.value)}
               placeholder="lead.student@university.edu"
-              className={`dark-editorial-input w-full pl-10 pr-4 py-3 text-sm text-[#FFFDF7] placeholder-[#786882] ${
+              className={`dark-editorial-input w-full pl-10 pr-4 py-2.5 sm:py-3 text-sm text-[#FFFDF7] placeholder-[#786882] ${
                 errors.teamLeadEmail ? "!border-rose-500 ring-2 ring-rose-500/20" : ""
               }`}
             />
@@ -85,7 +85,7 @@ export default function TeamLeadSection({ formData, errors, onChange }: TeamLead
               value={formData.teamLeadName}
               onChange={(e) => onChange("teamLeadName", e.target.value)}
               placeholder="e.g. Alex Morgan"
-              className={`dark-editorial-input w-full pl-10 pr-4 py-3 text-sm text-[#FFFDF7] placeholder-[#786882] ${
+              className={`dark-editorial-input w-full pl-10 pr-4 py-2.5 sm:py-3 text-sm text-[#FFFDF7] placeholder-[#786882] ${
                 errors.teamLeadName ? "!border-rose-500 ring-2 ring-rose-500/20" : ""
               }`}
             />
@@ -110,7 +110,7 @@ export default function TeamLeadSection({ formData, errors, onChange }: TeamLead
               value={formData.teamLeadRollNumber}
               onChange={(e) => onChange("teamLeadRollNumber", e.target.value.toUpperCase())}
               placeholder="e.g. 22CS0101"
-              className={`dark-editorial-input w-full pl-10 pr-4 py-3 text-sm text-[#FFFDF7] placeholder-[#786882] uppercase ${
+              className={`dark-editorial-input w-full pl-10 pr-4 py-2.5 sm:py-3 text-sm text-[#FFFDF7] placeholder-[#786882] uppercase ${
                 errors.teamLeadRollNumber ? "!border-rose-500 ring-2 ring-rose-500/20" : ""
               }`}
             />
@@ -132,7 +132,7 @@ export default function TeamLeadSection({ formData, errors, onChange }: TeamLead
             <select
               value={formData.year}
               onChange={(e) => handleYearChange(e.target.value)}
-              className={`dark-editorial-input w-full pl-10 pr-8 py-3 text-sm text-[#FFFDF7] appearance-none cursor-pointer bg-[#191220] ${
+              className={`dark-editorial-input w-full pl-10 pr-8 py-2.5 sm:py-3 text-sm text-[#FFFDF7] appearance-none cursor-pointer bg-[#191220] ${
                 errors.year ? "!border-rose-500 ring-2 ring-rose-500/20" : ""
               }`}
             >
@@ -162,7 +162,7 @@ export default function TeamLeadSection({ formData, errors, onChange }: TeamLead
               value={formData.section}
               onChange={(e) => onChange("section", e.target.value)}
               disabled={!formData.year}
-              className={`dark-editorial-input w-full pl-10 pr-8 py-3 text-sm text-[#FFFDF7] appearance-none cursor-pointer bg-[#191220] ${
+              className={`dark-editorial-input w-full pl-10 pr-8 py-2.5 sm:py-3 text-sm text-[#FFFDF7] appearance-none cursor-pointer bg-[#191220] ${
                 !formData.year ? "opacity-50 cursor-not-allowed" : ""
               } ${errors.section ? "!border-rose-500 ring-2 ring-rose-500/20" : ""}`}
             >
@@ -194,7 +194,7 @@ export default function TeamLeadSection({ formData, errors, onChange }: TeamLead
               value={formData.teamLeadPhone}
               onChange={(e) => onChange("teamLeadPhone", e.target.value)}
               placeholder="e.g. 9876543210"
-              className={`dark-editorial-input w-full pl-10 pr-4 py-3 text-sm text-[#FFFDF7] placeholder-[#786882] ${
+              className={`dark-editorial-input w-full pl-10 pr-4 py-2.5 sm:py-3 text-sm text-[#FFFDF7] placeholder-[#786882] ${
                 errors.teamLeadPhone ? "!border-rose-500 ring-2 ring-rose-500/20" : ""
               }`}
             />
