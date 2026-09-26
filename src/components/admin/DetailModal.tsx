@@ -211,7 +211,7 @@ export default function DetailModal({
             {showImagePreview && (
               <div className="mt-4 p-3 sm:p-4 rounded-[4px] bg-[#140F1A] border border-[#362844] flex flex-col items-center">
                 <div className="max-h-72 sm:max-h-96 w-full overflow-hidden rounded-[2px] border border-[#362844] mb-3 bg-black flex items-center justify-center p-2">
-                  {!imageError ? (
+                  {!imageError && directImgUrl ? (
                     <img
                       src={directImgUrl}
                       alt={`Payment proof for ${registration.id}`}
@@ -219,25 +219,31 @@ export default function DetailModal({
                       className="max-h-64 sm:max-h-80 w-auto max-w-full object-contain rounded-[2px]"
                     />
                   ) : (
-                    <div className="text-center p-4">
-                      <p className="text-xs font-mono text-amber-300 mb-1">
-                        Screenshot was stored in an ephemeral session or is external.
+                    <div className="text-center p-4 bg-[#191220] rounded-[2px] border border-[#362844] w-full">
+                      <div className="w-8 h-8 rounded-full bg-emerald-950/60 text-emerald-400 border border-emerald-500/40 mx-auto flex items-center justify-center mb-2 font-mono font-bold text-sm">
+                        ✓
+                      </div>
+                      <p className="text-xs font-mono font-bold text-[#FFFDF7] mb-1">
+                        ₹100 Event Fee Recorded
                       </p>
                       <p className="text-[11px] font-mono text-[#96869E]">
-                        New uploads are permanently backed up to high-speed cloud CDN.
+                        Registration {registration.id} • {registration.teamLeadName}
                       </p>
                     </div>
                   )}
                 </div>
-                <a
-                  href={registration.paymentScreenshotUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center space-x-1.5 text-xs font-mono text-[#C8F04A] hover:underline min-h-[36px] py-1 touch-manipulation"
-                >
-                  <span>Open Full Screenshot in New Tab</span>
-                  <ExternalLink className="w-3.5 h-3.5" />
-                </a>
+
+                {directImgUrl && directImgUrl.startsWith("http") && !imageError && (
+                  <a
+                    href={directImgUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center space-x-1.5 text-xs font-mono text-[#C8F04A] hover:underline min-h-[36px] py-1 touch-manipulation"
+                  >
+                    <span>Open Full Screenshot in New Tab</span>
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </a>
+                )}
               </div>
             )}
           </div>
